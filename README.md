@@ -23,21 +23,21 @@ This function is used to generate a "ReplicationTemplate" for your table, and wi
 You must add each property you wish to network, as they will be the only ones sent.
 ```lua
 function ReplicatedTable:GetReplicatedProperties(rt)
-rt:AddString("name")
-rt:AddUInt("money",  32)
-rt:AddBool("has_team")
+  rt:AddString("name")
+  rt:AddUInt("money",  32)
+  rt:AddBool("has_team")
 
--- Properties can have replication conditions, and will be sent if the condition returns true.
-rt:AddColor("team_color")
-  :SetReplicationCondition(function(tbl)  return tbl.has_team end)
+  -- Properties can have replication conditions, and will be sent if the condition returns true.
+  rt:AddColor("team_color")
+    :SetReplicationCondition(function(tbl)  return tbl.has_team end)
 
--- They can also depend on other properties, and will only be sent if the dependency was replicated.
-rt:AddColor("secondary_color")
-  :SetDependsOn("team_color")
+  -- They can also depend on other properties, and will only be sent if the dependency was replicated.
+  rt:AddColor("secondary_color")
+    :SetDependsOn("team_color")
   
--- You can replicate lists, the values will be sent.
--- The last argument is the number of bits that may represent the maximum amount of elements in the list.
-rt:AddOrderedList("inventory", ReplicationType.String, 8)
+  -- You can replicate lists, the values will be sent.
+  -- The last argument is the number of bits that may represent the maximum amount of elements in the list.
+  rt:AddOrderedList("inventory", ReplicationType.String, 8)
 end
 ```
 You must then call `Replicate.SetupMetaTable()` at the end of your table.
