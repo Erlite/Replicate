@@ -7,6 +7,7 @@ RepProperty.__index = RepProperty
 ReplicationType = 
 {
     String = "String", -- A string property.
+    Data = "Data",
     Float = "Float", -- A float (decimal) value.
     Double = "Double", -- A double precision number.
     UInt = "UInt", -- An unsigned integer. Requires the amount of bits to be specified, or it will default to 32.

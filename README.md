@@ -22,7 +22,7 @@ This function is used to generate a "ReplicationTemplate" for your table, and wi
 
 You must add each property you wish to network, as they will be the only ones sent.
 ```lua
-function  ReplicatedTable:GetReplicatedProperties(rt)
+function ReplicatedTable:GetReplicatedProperties(rt)
 rt:AddString("name")
 rt:AddUInt("money",  32)
 rt:AddBool("has_team")

@@ -182,6 +182,11 @@ function Replicate.Funcs.WriteString(prop, value)
     net.WriteString(value)
 end
 
+function Replicate.Funcs.WriteData(prop, value)
+    net.WriteUInt(#value, 16)
+    net.WriteData(value, #value)
+end
+
 function Replicate.Funcs.WriteFloat(prop, value)
     net.WriteFloat(value)
 end
@@ -255,6 +260,11 @@ end
 
 function Replicate.Funcs.ReadString(prop)
     return net.ReadString()
+end
+
+function Replicate.Funcs.ReadData(prop)
+    local len = net.ReadUInt(16)
+    return net.ReadData(len)
 end
 
 function Replicate.Funcs.ReadFloat(prop)

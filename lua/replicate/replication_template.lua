@@ -49,6 +49,11 @@ function ReplicationTemplate:AddString(name)
     return self:AddProperty(prop)
 end
 
+function ReplicationTemplate:AddData(name)
+    local prop = RepProperty(name, ReplicationType.Data)
+    return self:AddProperty(prop)
+end
+
 function ReplicationTemplate:AddFloat(name)
     local prop = RepProperty(name, ReplicationType.Float)
     return self:AddProperty(prop)
