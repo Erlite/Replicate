@@ -34,6 +34,7 @@ function RepProperty:new(inName, inType)
         condition = nil,
         depends_on = nil,
         was_replicated = false,
+        meta_table = nil,
     }
 
     setmetatable(tbl, RepProperty)
@@ -57,6 +58,9 @@ AccessorFunc(RepProperty, "condition", "ReplicationCondition")
 AccessorFunc(RepProperty, "depends_on", "DependsOn")
 -- Whether or not this property was replicated in the latest replication. Always true unless it depends on another/has a condition.
 AccessorFunc(RepProperty, "was_replicated", "WasReplicated", FORCE_BOOL)
+-- The meta table of a table property if any.
+-- Used when reading tables.
+AccessorFunc(RepProperty, "meta_table", "MetaTable")
 
 
 function RepProperty:AssertValid()

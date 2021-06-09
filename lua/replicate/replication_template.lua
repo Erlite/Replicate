@@ -118,8 +118,9 @@ function ReplicationTemplate:AddEntity(name)
     return self:AddProperty(prop)
 end
 
-function ReplicationTemplate:AddTable(name)
+function ReplicationTemplate:AddTable(name, metatable)
     local prop = RepProperty(name, ReplicationType.Table)
+    prop:SetMetaTable(metatable)
     return self:AddProperty(prop)
 end
 
