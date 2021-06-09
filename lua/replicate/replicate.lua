@@ -15,10 +15,6 @@ function Replicate.SetupMetaTable(tbl, name)
         error("You must provide a friendly name for the table!")
     end
 
-    if not getmetatable(tbl) then
-        error("Table must have a metatable set, normal tables will be networked with ReadTable()/WriteTable()")
-    end
-
     if not tbl.GetReplicatedProperties then
         error("Table is missing the GetReplicatedProperties() function.")
     end
@@ -34,7 +30,7 @@ function Replicate.SetupMetaTable(tbl, name)
 
     template:AssertValid()
 
-    Replicate.Templates[getmetatable(tbl)] = template
+    Replicate.Templates[tbl] = template
     MsgC(Color(0, 255, 0), "Replicate: Registered metatable '", name, "'.", "\n")
 end
 

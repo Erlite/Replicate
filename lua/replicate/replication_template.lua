@@ -1,5 +1,4 @@
 AddCSLuaFile()
-include("rep_property.lua")
 
 ReplicationTemplate = {}
 ReplicationTemplate.__index = ReplicationTemplate
