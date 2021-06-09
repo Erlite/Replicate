@@ -172,7 +172,7 @@ end
 -- Returns the index and property it finds from the given name.
 -- If none are found, returns -1, nil
 function ReplicationTemplate:GetPropertyByName(name)
-    Replicate.Assert.IsNotNilOrEmptyString(name)
+    Replicate.Assert.NotNilOrEmptyString(name)
 
     for key, prop in ipairs(self:GetProperties()) do
         if prop:GetName() == name then
