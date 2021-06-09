@@ -1,6 +1,11 @@
 # Replicate 
 A networking framework to read and write tables efficiently for Garry's Mod.
 
+## WARNING
+
+This currently works *as long as you don't put registered metatables inside other registered metatables*.
+Fix for that coming soon.
+
 ## What is it?
 Replicate has been made as a replacement for `net.ReadTable()` and `net.WriteTable()`.
 It requires a little bit more setting up for tables, but once done, will handle networking these efficiently and effortlessly.
