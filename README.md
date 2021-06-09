@@ -52,3 +52,12 @@ net.Start("MyNetMessage")
 net.SendToServer()
 ```
 Be careful: any table that isn't registered or doesn't have a metatable will default to `net.WriteTable()`
+
+## Receiving the table.
+
+Same as above, but using `Replicate.ReadTable()`. You must supply the meta table to grab a template from.
+```lua
+net.Receive("MyNetMessage", function(len, ply)
+	local tbl = Replicate.ReadTable(MyMetaTable)
+end)
+```
