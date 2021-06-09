@@ -131,12 +131,12 @@ function Replicate.Funcs.WriteDouble(prop, value)
 end
 
 function Replicate.Funcs.WriteUInt(prop, value)
-    Replicate.Funcs.Assert.IsValidBitAmount(prop:GetBits())
+    Replicate.Assert.IsValidBitAmount(prop:GetBits())
     net.WriteUInt(value, prop:GetBits())
 end
 
 function Replicate.Funcs.WriteInt(prop, value)
-    Replicate.Funcs.Assert.IsValidBitAmount(prop:GetBits())
+    Replicate.Assert.IsValidBitAmount(prop:GetBits())
     net.WriteInt(value, prop:GetBits())
 end
 
@@ -170,6 +170,7 @@ function Replicate.Funcs.WriteTable(prop, value)
 end
 
 function Replicate.Funcs.WriteList(prop, value)
+    Replicate.Assert.IsValidBitAmount(prop:GetBits())
     net.WriteUInt(#value, prop:GetBits())
 
     local writeFunc = Replicate.Funcs["Write" .. prop:GetValueType()]
@@ -179,10 +180,92 @@ function Replicate.Funcs.WriteList(prop, value)
 end
 
 function Replicate.Funcs.WriteOrderedList(prop, value)
+    Replicate.Assert.IsValidBitAmount(prop:GetBits())
     net.WriteUInt(#value, prop:GetBits())
 
     local writeFunc = Replicate.Funcs["Write" .. prop:GetValueType()]
     for _, v in ipairs(value) do
         writeFunc(prop, v)
     end
+end
+
+--[[
+    Read functions
+--]]
+
+function Replicate.Funcs.ReadString(prop)
+    return net.ReadString()
+end
+
+function Replicate.Funcs.ReadFloat(prop)
+    return net.ReadFloat()
+end
+
+function Replicate.Funcs.ReadDouble(prop)
+    return net.ReadDouble()
+end
+
+function Replicate.Funcs.ReadUInt(prop)
+    Replicate.Assert.IsValidBitAmount(prop:GetBits())
+    return net.ReadUInt(prop:GetBits())
+end
+
+function Replicate.Funcs.ReadInt(prop)
+    Replicate.Assert.IsValidBitAmount(prop:GetBits())
+    return net.ReadInt(prop:GetBits())
+end
+
+function Replicate.Funcs.ReadBool(prop)
+    return net.ReadBool()
+end
+
+function Replicate.Funcs.ReadBit(prop)
+    return net.ReadBit()
+end
+
+function Replicate.Funcs.ReadColor(prop)
+    return net.ReadColor()
+end
+
+function Replicate.Funcs.ReadVector(prop)
+    return net.ReadVector()
+end
+
+function Replicate.Funcs.ReadAngle(prop)
+    return net.ReadAngle()
+end
+
+function Replicate.Funcs.ReadEntity(prop)
+    return net.ReadEntity()
+end
+
+-- Haha recursion go brrrrt
+function Replicate.Funcs.ReadTable(prop) 
+    return Replicate.ReadTable(prop:GetMetaTable())
+end
+
+function Replicate.Funcs.ReadList(prop)
+    Replicate.Assert.IsValidBitAmount(prop:GetBits())
+    local size = net.ReadUInt(prop:GetBits())
+    local tbl = {}
+
+    local ReadFunc = Replicate.Funcs["Read" .. prop:GetValueType()]
+    for i = 1, size do
+        tbl[i] = ReadFunc(prop)
+    end
+
+    return tbl
+end
+
+function Replicate.Funcs.ReadOrderedList(prop)
+    Replicate.Assert.IsValidBitAmount(prop:GetBits())
+    local size = net.ReadUInt(prop:GetBits())
+    local tbl = {}
+
+    local ReadFunc = Replicate.Funcs["Read" .. prop:GetValueType()]
+    for i = 1, size do
+        tbl[i] = ReadFunc(prop)
+    end
+
+    return tbl
 end
