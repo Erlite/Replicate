@@ -5,6 +5,15 @@ A networking framework to read and write tables efficiently for Garry's Mod.
 Replicate has been made as a replacement for `net.ReadTable()` and `net.WriteTable()`.
 It requires a little bit more setting up for tables, but once done, will handle networking these efficiently and effortlessly.
 
+## Why do I see `net.ReadTable()` and `net.WriteTable()` in the code then?
+
+This library does not make use of these, except for the following reasons:
+
+- You're networking a table that wasn't setup (i.e. your fault.)
+- You're networking a nil table (net.WriteTable() is fine since it'll just say it's nil, it isn't costly at all)
+
+I'm looking at you `gmodstore`, this library's usage of the functions shouldn't be "prohibited" as long as the developers respect the usage.
+
 ## Usage
 This assumes your tables are already metatables, if not, check this [wiki page](https://wiki.facepunch.com/gmod/Object_Oriented_Lua#method2metatables) out.
 
