@@ -135,6 +135,7 @@ function Replicate.ReadTable(meta)
         Replicate.ReadProperty(tbl, template, index, prop)
     end
 
+    setmetatable(tbl, meta)
     return tbl
 end
 

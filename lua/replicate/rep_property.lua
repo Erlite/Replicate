@@ -60,7 +60,7 @@ AccessorFunc(RepProperty, "depends_on", "DependsOn")
 -- Whether or not this property was replicated in the latest replication. Always true unless it depends on another/has a condition.
 AccessorFunc(RepProperty, "was_replicated", "WasReplicated", FORCE_BOOL)
 -- The meta table of a table property if any.
--- Used when reading tables.
+-- Used when reading tables. If nil or unregistered, net.ReadTable() will be used.
 AccessorFunc(RepProperty, "meta_table", "MetaTable")
 
 
