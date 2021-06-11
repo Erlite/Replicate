@@ -65,15 +65,24 @@ function Replicate.WriteTable(tbl)
     local template = Replicate.Templates[meta]
     Replicate.Log.Info(string.format("Starting to write using template '%s'.", template:GetName()))
 
+    local replicated_props = {}
     -- Write every registered property.
     for index, prop in ipairs(template:GetProperties()) do
-        Replicate.WriteProperty(tbl, template, index, prop)
+        Replicate.WriteProperty(tbl, template, replicated_props, index, prop)
     end
 
     Replicate.Log.Info("Done!")
 end
 
-function Replicate.WriteProperty(tbl, template, index, prop)
+--[[
+    Write a property to the net library.
+    @param tbl The table that contains the property to write.
+    @param template The replication template that holds the property.
+    @param replicated_props An inversed table containing a list of properties that were replicated as keys.
+    @param index The index of the property.
+    @param prop The property to write.
+--]]
+function Replicate.WriteProperty(tbl, template, replicated_props, index, prop)
     local depends_on = prop:GetDependsOn()
 
     -- This property depends on another. Let's check that the other was replicated.
@@ -83,9 +92,8 @@ function Replicate.WriteProperty(tbl, template, index, prop)
             error(string.format("Property '%s' depends on unknown dependency '%s'. This should never happen!", prop:GetName(), depends_on))
         end
 
-        if not dependency:GetWasReplicated() then
+        if not replicated_props[depends_on] then
             Replicate.Log.Warning(string.format("Skipping property '%s': dependency '%s' wasn't replicated.", prop:GetName(), depends_on))
-            prop:SetWasReplicated(false)
             return
         end
     end
@@ -98,13 +106,12 @@ function Replicate.WriteProperty(tbl, template, index, prop)
 
         if not shouldReplicate then
             Replicate.Log.Warning(string.format("Skipping property '%s': replication condition not met.", prop:GetName()))
-            prop:SetWasReplicated(false)
             return
         end
     end
 
     Replicate.Funcs["Write" .. prop:GetType()](prop, tbl[prop:GetName()])
-    prop:SetWasReplicated(true)
+    replicated_props[prop:GetName()] = true
 
     Replicate.Log.Info(string.format("Wrote property '%s' of type '%s'", prop:GetName(), prop:GetType()))
 end
@@ -131,15 +138,24 @@ function Replicate.ReadTable(meta)
     Replicate.Log.Info(string.format("Starting to read using template '%s'.", template:GetName()))
 
     local tbl = {}
+    local replicated_props = {}
     for index, prop in ipairs(template:GetProperties()) do
-        Replicate.ReadProperty(tbl, template, index, prop)
+        Replicate.ReadProperty(tbl, template, replicated_props, index, prop)
     end
 
     setmetatable(tbl, meta)
     return tbl
 end
 
-function Replicate.ReadProperty(tbl, template, index, prop)
+--[[
+    Read a property to the net library.
+    @param tbl The table to read the property to.
+    @param template The replication template that holds the property to read.
+    @param replicated_props An inversed table containing a list of properties that were replicated as keys.
+    @param index The index of the property.
+    @param prop The property to read.
+--]]
+function Replicate.ReadProperty(tbl, template, replicated_props, index, prop)
     local depends_on = prop:GetDependsOn()
 
     -- This property depends on another. Let's check that the other was replicated.
@@ -149,9 +165,8 @@ function Replicate.ReadProperty(tbl, template, index, prop)
             error(string.format("Property '%s' depends on unknown dependency '%s'. This should never happen!", prop:GetName(), depends_on))
         end
 
-        if not dependency:GetWasReplicated() then
+        if not replicated_props[depends_on] then
             Replicate.Log.Warning(string.format("Skipping property '%s': dependency '%s' wasn't replicated.", prop:GetName(), depends_on))
-            prop:SetWasReplicated(false)
             return
         end
     end
@@ -163,14 +178,13 @@ function Replicate.ReadProperty(tbl, template, index, prop)
 
         if not passed_condition then
             Replicate.Log.Warning(string.format("Skipping property '%s': replication condition not met.", prop:GetName()))
-            prop:SetWasReplicated(false)
             return
         end
     end
 
     local value = Replicate.Funcs["Read" .. prop:GetType()](prop)
     tbl[prop:GetName()] = value
-    prop:SetWasReplicated(true)
+    replicated_props[prop:GetName()] = true
 
     Replicate.Log.Info(string.format("Read property '%s' of type '%s'", prop:GetName(), prop:GetType()))
 end

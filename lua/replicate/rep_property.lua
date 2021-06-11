@@ -34,7 +34,6 @@ function RepProperty:new(inName, inType)
         value_type = nil,
         condition = nil,
         depends_on = nil,
-        was_replicated = false,
         meta_table = nil,
     }
 
@@ -57,8 +56,6 @@ AccessorFunc(RepProperty, "condition", "ReplicationCondition")
 -- If not nil, the RepProperty name this property depends on. It will only be written/read if the dependency's condition is true. 
 -- Only works if the dependency has a replication condition.
 AccessorFunc(RepProperty, "depends_on", "DependsOn")
--- Whether or not this property was replicated in the latest replication. Always true unless it depends on another/has a condition.
-AccessorFunc(RepProperty, "was_replicated", "WasReplicated", FORCE_BOOL)
 -- The meta table of a table property if any.
 -- Used when reading tables. If nil or unregistered, net.ReadTable() will be used.
 AccessorFunc(RepProperty, "meta_table", "MetaTable")
