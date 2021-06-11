@@ -37,7 +37,6 @@ end
 function Replicate.WriteTable(tbl)
     -- Nil tables can just be written by WriteTable()
     if not tbl then
-        Replicate.Log.Warning("Table is nil, writing using net.WriteTable()")
         net.WriteTable(tbl)
         return
     end
@@ -50,20 +49,17 @@ function Replicate.WriteTable(tbl)
     -- No metatable, use WriteTable()
     local meta = getmetatable(tbl)
     if not meta then
-        Replicate.Log.Warning("Attempting to write a normal table, defaulting to net.WriteTable()")
         net.WriteTable(tbl)
         return
     end
 
     -- Unregistered metatables get the WriteTable() treatment.
     if not Replicate.Templates[meta] then
-        Replicate.Log.Warning("Attempting to write an unregistered metatable, defaulting to net.WriteTable()")
         net.WriteTable(tbl)
         return
     end
 
     local template = Replicate.Templates[meta]
-    Replicate.Log.Info(string.format("Starting to write using template '%s'.", template:GetName()))
 
     local replicated_props = {}
     -- Write every registered property.
@@ -71,7 +67,6 @@ function Replicate.WriteTable(tbl)
         Replicate.WriteProperty(tbl, template, replicated_props, index, prop)
     end
 
-    Replicate.Log.Info("Done!")
 end
 
 --[[
@@ -93,7 +88,6 @@ function Replicate.WriteProperty(tbl, template, replicated_props, index, prop)
         end
 
         if not replicated_props[depends_on] then
-            Replicate.Log.Warning(string.format("Skipping property '%s': dependency '%s' wasn't replicated.", prop:GetName(), depends_on))
             return
         end
     end
@@ -105,7 +99,6 @@ function Replicate.WriteProperty(tbl, template, replicated_props, index, prop)
         net.WriteBool(shouldReplicate)
 
         if not shouldReplicate then
-            Replicate.Log.Warning(string.format("Skipping property '%s': replication condition not met.", prop:GetName()))
             return
         end
     end
@@ -113,13 +106,11 @@ function Replicate.WriteProperty(tbl, template, replicated_props, index, prop)
     Replicate.Funcs["Write" .. prop:GetType()](prop, tbl[prop:GetName()])
     replicated_props[prop:GetName()] = true
 
-    Replicate.Log.Info(string.format("Wrote property '%s' of type '%s'", prop:GetName(), prop:GetType()))
 end
 
 function Replicate.ReadTable(meta)
     -- No metatable means we default to ReadTable(). 
     if not meta then
-        Replicate.Log.Warning("Metatable is nil, reading using net.ReadTable()")
         return net.ReadTable()
     end
 
@@ -130,12 +121,10 @@ function Replicate.ReadTable(meta)
 
     -- Unregistered metatable gets the ReadTable() treatment.
     if not Replicate.Templates[meta] then
-        Replicate.Log.Warning("Attempting to read an unregistered metatable, defaulting to net.ReadTable()")
         return net.ReadTable()
     end
 
     local template = Replicate.Templates[meta]
-    Replicate.Log.Info(string.format("Starting to read using template '%s'.", template:GetName()))
 
     local tbl = {}
     local replicated_props = {}
@@ -166,7 +155,9 @@ function Replicate.ReadProperty(tbl, template, replicated_props, index, prop)
         end
 
         if not replicated_props[depends_on] then
-            Replicate.Log.Warning(string.format("Skipping property '%s': dependency '%s' wasn't replicated.", prop:GetName(), depends_on))
+            if prop:GetDefaultValue() then
+                tbl[prop:GetName()] = prop:GetDefaultValue()
+            end
             return
         end
     end
@@ -177,7 +168,9 @@ function Replicate.ReadProperty(tbl, template, replicated_props, index, prop)
         local passed_condition = net.ReadBool()
 
         if not passed_condition then
-            Replicate.Log.Warning(string.format("Skipping property '%s': replication condition not met.", prop:GetName()))
+            if prop:GetDefaultValue() then
+                tbl[prop:GetName()] = prop:GetDefaultValue()
+            end
             return
         end
     end
@@ -186,7 +179,6 @@ function Replicate.ReadProperty(tbl, template, replicated_props, index, prop)
     tbl[prop:GetName()] = value
     replicated_props[prop:GetName()] = true
 
-    Replicate.Log.Info(string.format("Read property '%s' of type '%s'", prop:GetName(), prop:GetType()))
 end
 
 --[[

@@ -34,6 +34,7 @@ function RepProperty:new(inName, inType)
         value_type = nil,
         condition = nil,
         depends_on = nil,
+        default_value = nil,
         meta_table = nil,
     }
 
@@ -56,6 +57,8 @@ AccessorFunc(RepProperty, "condition", "ReplicationCondition")
 -- If not nil, the RepProperty name this property depends on. It will only be written/read if the dependency's condition is true. 
 -- Only works if the dependency has a replication condition.
 AccessorFunc(RepProperty, "depends_on", "DependsOn")
+-- The default value to assign to this property if it does not get replicated (useful for props with a condition or that depend on another)
+AccessorFunc(RepProperty, "default_value", "DefaultValue")
 -- The meta table of a table property if any.
 -- Used when reading tables. If nil or unregistered, net.ReadTable() will be used.
 AccessorFunc(RepProperty, "meta_table", "MetaTable")
