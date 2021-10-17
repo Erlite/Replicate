@@ -22,7 +22,8 @@ ReplicationType =
     Entity = "Entity", -- An entity (internally, networks the EntIndex() using 16 bits)
     Table = "Table", -- Table properties must also be setup with Replicate, else it'll default to Read/WriteTable. You don't want that, do you?
     List = "List", -- A simple list, considered not ordered. Will be written as an ordinal list.
-    OrderedList = "OrderedList", -- A simple list with ordered numerical keys (first key must be 1)
+    OrderedList = "OrderedList", -- A simple list with ordered numerical keys (first key must be 1),
+    ValueTable = "ValueTable", -- A key -> bool table, will only read and write keys that have true values. Keys are assumed to be strings.
 }
 
 function RepProperty:new(inName, inType)
@@ -30,7 +31,7 @@ function RepProperty:new(inName, inType)
     {
         name = inName,
         type = inType,
-        bits = 32,
+        bits = nil,
         value_type = nil,
         condition = nil,
         depends_on = nil,

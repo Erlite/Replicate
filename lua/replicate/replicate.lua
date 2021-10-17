@@ -42,9 +42,15 @@ function Replicate.WriteTable(tbl)
     end
 
     -- Can't write anything other than a table.
-    if not istable(tbl) then
+    if tbl and not istable(tbl) then
         error("Expected to write a table, got: " .. type(tbl))
     end
+
+    -- If it's nil, write TYPE_NIL.
+    -- The reason I don't write a bit, is that this will also work in case the receiving end uses net.ReadTable() for whatever reason.
+    if not tbl then 
+        net.WriteType(TYPE_NIL)
+    end    
 
     -- No metatable, use WriteTable()
     local meta = getmetatable(tbl)
@@ -58,6 +64,8 @@ function Replicate.WriteTable(tbl)
         net.WriteTable(tbl)
         return
     end
+
+    net.WriteType(TYPE_TABLE)
 
     local template = Replicate.Templates[meta]
 
@@ -117,6 +125,7 @@ function Replicate.ReadTable(meta)
     -- Don't pass in anything else than a table.
     if not istable(meta) then
         error("Expected a table, got: " .. type(tbl))
+        return
     end
 
     -- Unregistered metatable gets the ReadTable() treatment.
@@ -125,6 +134,14 @@ function Replicate.ReadTable(meta)
     end
 
     local template = Replicate.Templates[meta]
+    local readType = net.ReadType()
+
+    if readType == TYPE_NIL then 
+        return nil
+    elseif readType ~= TYPE_TABLE then 
+        error("Expected TYPE_TABLE or TYPE_NIL when reading type for sanity check, got: " .. tostring(readType))
+        return nil
+    end
 
     local tbl = {}
     local replicated_props = {}
@@ -190,7 +207,7 @@ function Replicate.Funcs.WriteString(prop, value)
 end
 
 function Replicate.Funcs.WriteData(prop, value)
-    net.WriteUInt(#value, 16)
+    net.WriteUInt(#value, prop:GetBits() or 16)
     net.WriteData(value, #value)
 end
 
@@ -204,6 +221,7 @@ end
 
 function Replicate.Funcs.WriteUInt(prop, value)
     Replicate.Assert.IsValidBitAmount(prop:GetBits())
+    PrintTable(value)
     net.WriteUInt(value, prop:GetBits())
 end
 
@@ -261,6 +279,21 @@ function Replicate.Funcs.WriteOrderedList(prop, value)
     end
 end
 
+function Replicate.Funcs.WriteValueTable(prop, value)
+    local bits = prop:GetBits() or 32
+    local keys = {}
+    for k, v in pairs(value) do
+        if v then
+            values[#values + 1] = k
+        end
+    end
+
+    net.WriteUInt(#keys, bits)
+    for _, v in ipairs(keys) do
+        net.WriteString(v)
+    end
+end
+
 --[[
     Read functions
 --]]
@@ -270,7 +303,7 @@ function Replicate.Funcs.ReadString(prop)
 end
 
 function Replicate.Funcs.ReadData(prop)
-    local len = net.ReadUInt(16)
+    local len = net.ReadUInt(prop:GetBits() or 16)
     return net.ReadData(len)
 end
 
@@ -342,6 +375,18 @@ function Replicate.Funcs.ReadOrderedList(prop)
     local ReadFunc = Replicate.Funcs["Read" .. prop:GetValueType()]
     for i = 1, size do
         tbl[i] = ReadFunc(prop)
+    end
+
+    return tbl
+end
+
+function Replicate.Funcs.WriteValueTable(prop)
+    local bits = prop:GetBits() or 32
+
+    local tbl = {}
+    local count = net.ReadUInt(bits)
+    for i = 1, count do
+        tbl[net.ReadString()] = true
     end
 
     return tbl
