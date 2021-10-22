@@ -51,7 +51,7 @@ Replicate will generate everything needed to network your table (or throw an err
 You can check the example metatable [here](https://github.com/Erlite/Replicate/blob/master/lua/replicate/example.lua).
 
 ## Supported types
-Every type supported by the [net library](https://wiki.facepunch.com/gmod/net) is supported, as well as some custom helpers. You can find the complete list [here](https://github.com/Erlite/Replicate/blob/master/lua/replicate/rep_property.lua).
+Every type supported by the [net library](https://wiki.facepunch.com/gmod/net) is supported, as well as some custom helpers. You can find the complete list [here](https://github.com/Erlite/Replicate/blob/master/lua/replicate/rep_property.lua#L40).
 
 ## Sending the table
 Instead of using `net.WriteTable()`, you simply call `Replicate.WriteTable()`
