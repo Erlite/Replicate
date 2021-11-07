@@ -57,6 +57,7 @@ ReplicationType =
     List = "List", -- A simple list, considered not ordered. Will be written as an ordinal list.
     OrderedList = "OrderedList", -- A simple list with ordered numerical keys (first key must be 1),
     ValueTable = "ValueTable", -- A key -> bool table, will only read and write keys that have true values. Keys are assumed to be strings.
+    KeyValueTable = "KeyValueTable", -- A key -> value table. Keys are assumed to be strings and values too.
 }
 
 function RepProperty:new(inName, inType)
