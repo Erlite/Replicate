@@ -1,3 +1,7 @@
+--[[
+    Example table setup for Replicate.
+--]]
+
 AddCSLuaFile()
 
 ReplicatedTable = {}
@@ -33,3 +37,21 @@ end
 
 setmetatable(ReplicatedTable, {__call = ReplicatedTable.new})
 Replicate.SetupMetaTable(ReplicatedTable, "ReplicatedTable")
+
+--[[
+    Sending the table.
+--]]
+
+function MyAddon.SendDataToServer()
+    local tbl = GetSomeTable()
+    net.Start("Server.ReceiveData")
+        Replicate.WriteTable(tbl)
+    net.SendToServer()
+end
+
+--[[ 
+    Receiving the table
+--]]
+net.Receive("Server.ReceiveData", function(len, ply)
+    local tbl = Replicate.ReadTable(ReplicatedTable) -- You must pass the metatable for it to be read correctly.
+end)
