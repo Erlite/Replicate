@@ -283,13 +283,29 @@ function Replicate.Funcs.WriteValueTable(prop, value)
     local keys = {}
     for k, v in pairs(value) do
         if v then
-            values[#values + 1] = k
+            keys[#keys + 1] = k
         end
     end
 
     net.WriteUInt(#keys, bits)
     for _, v in ipairs(keys) do
         net.WriteString(v)
+    end
+end
+
+function Replicate.Funcs.WriteKeyValueTable(prop, value)
+    local bits = prop:GetBits() or 32
+    local keys = {}
+    local values = {}
+    for k, v in pairs(value) do
+        keys[#keys + 1] = k
+        values[#values + 1] = v
+    end
+
+    net.WriteUInt(#keys, bits)
+    for i = 1, #keys do
+        net.WriteString(keys[i])
+        net.WriteString(values[i])
     end
 end
 
@@ -379,13 +395,25 @@ function Replicate.Funcs.ReadOrderedList(prop)
     return tbl
 end
 
-function Replicate.Funcs.WriteValueTable(prop)
+function Replicate.Funcs.ReadValueTable(prop)
     local bits = prop:GetBits() or 32
-
     local tbl = {}
+
     local count = net.ReadUInt(bits)
     for i = 1, count do
         tbl[net.ReadString()] = true
+    end
+
+    return tbl
+end
+
+function Replicate.Funcs.ReadKeyValueTable(prop)
+    local bits = prop:GetBits() or 32
+    local tbl = {}
+
+    local count = net.ReadUInt(bits)
+    for i = 1, count do
+        tbl[net.ReadString()] = net.ReadString()
     end
 
     return tbl
