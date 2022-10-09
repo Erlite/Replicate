@@ -38,7 +38,7 @@ function ReplicationTemplate:AddProperty(prop)
         end
     end
 
-    MsgC(Color(255, 145, 0), "Registered property '", prop:GetName(), "' of type '", prop:GetType(), "'", "\n")
+    MsgC(Color(0, 255, 0), "Replicate: Registered property '", prop:GetName(), "' of type '", prop:GetType(), "'", "\n")
 
     self.properties[#self.properties + 1] = prop
     return prop
