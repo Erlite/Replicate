@@ -42,6 +42,7 @@ Replicate.SetupMetaTable(ReplicatedTable, "ReplicatedTable")
     Sending the table.
 --]]
 
+local MyAddon = {}
 function MyAddon.SendDataToServer()
     local tbl = GetSomeTable()
     net.Start("Server.ReceiveData")
