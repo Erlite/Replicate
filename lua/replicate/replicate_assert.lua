@@ -10,7 +10,7 @@ function Replicate.Assert.NotNilOrEmptyString(name, argName)
 end
 
 function Replicate.Assert.IsNotNil(tbl, name)
-    if table == nil then
+    if tbl[ name ] == nil then
         error("Expected a non nil value for argument name '" .. name .. "'")
     end
 end

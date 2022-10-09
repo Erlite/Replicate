@@ -22,7 +22,7 @@ function ReplicationTemplate:IsEmpty()
 end
 
 function ReplicationTemplate:AddProperty(prop)
-    Replicate.Assert.IsNotNil(prop, "RepProperty")
+    Replicate.Assert.IsNotNil(prop, "__index")
 
     if getmetatable(prop) ~= RepProperty then
         error("Expected a RepProperty, got: " .. type(prop))
